@@ -33,13 +33,9 @@ public class DamageEvents {
                         if (armorSwapEnabled.getOrDefault(player.getUUID(), Config.defaultMode)) {
                             if (currentDurability - e.getAmount() / 4.0 < threshold/100.0) {
 
-                                ItemStack replacement = findReplacement(player, armor);
-                                if (!replacement.isEmpty()) {
-                                    
-                                    if (!player.inventory.add(armor.copy())) {
-                                        
-                                        player.drop(armor.copy(), false);
-                                    }
+                                int replacementSlot = findReplacement(player, armor);
+                                if (replacementSlot != -1) {
+                                    ItemStack replacement = player.inventory.items.get(replacementSlot);
                                     player.setItemSlot(slot, replacement.copy());
                                     replacement.shrink(1);
                                 }
@@ -52,13 +48,13 @@ public class DamageEvents {
         }
     }
 
-    private static ItemStack findReplacement(ServerPlayerEntity player, ItemStack armor) {
+    private static int findReplacement(ServerPlayerEntity player, ItemStack armor) {
         for (int i = 9; i < 36; i++) {
             ItemStack itemStack = player.inventory.items.get(i);
             if (!itemStack.isEmpty() && itemStack.getItem() instanceof ArmorItem) {
                 ArmorItem armorItem = (ArmorItem) itemStack.getItem();
                 if (armorItem.getSlot() == ((ArmorItem) armor.getItem()).getSlot() && itemStack != armor) {
-                    return itemStack;
+                    return i;
                 }
             }
         }
@@ -67,10 +63,10 @@ public class DamageEvents {
             if (!itemStack.isEmpty() && itemStack.getItem() instanceof ArmorItem) {
                 ArmorItem armorItem = (ArmorItem) itemStack.getItem();
                 if (armorItem.getSlot() == ((ArmorItem) armor.getItem()).getSlot() && itemStack != armor) {
-                    return itemStack;
+                    return i;
                 }
             }
         }
-        return ItemStack.EMPTY;
+        return -1;
     }
 }
