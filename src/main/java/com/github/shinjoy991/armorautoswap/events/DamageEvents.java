@@ -2,14 +2,11 @@ package com.github.shinjoy991.armorautoswap.events;
 
 import com.github.shinjoy991.armorautoswap.ArmorAutoSwap;
 import com.github.shinjoy991.armorautoswap.Config;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -36,15 +33,11 @@ public class DamageEvents {
                         if (armorSwapEnabled.getOrDefault(player.getUUID(), Config.defaultMode)) {
                             if (currentDurability - e.getAmount() / 4.0 < threshold/100.0) {
 
-                                ItemStack replacement = findReplacement(player, armor);
-                                if (!replacement.isEmpty()) {
-                                    
-                                    if (!player.getInventory().add(armor.copy())) {
-                                        
-                                        player.drop(armor.copy(), false);
-                                    }
+                                int replacementSlot = findReplacement(player, armor);
+                                if (replacementSlot != -1) {
+                                    ItemStack replacement = player.getInventory().items.get(replacementSlot);
                                     player.setItemSlot(slot, replacement.copy());
-                                    replacement.shrink(1);
+                                    player.getInventory().items.set(replacementSlot, armor.copy());
                                 }
                             }
                         }
@@ -55,12 +48,12 @@ public class DamageEvents {
         }
     }
 
-    private static ItemStack findReplacement(Player player, ItemStack armor) {
+    private static int findReplacement(Player player, ItemStack armor) {
         for (int i = 9; i < 36; i++) {
             ItemStack itemStack = player.getInventory().items.get(i);
             if (!itemStack.isEmpty() && itemStack.getItem() instanceof ArmorItem armorItem) {
                 if (armorItem.getSlot() == ((ArmorItem) armor.getItem()).getSlot() && itemStack != armor) {
-                    return itemStack;
+                    return i;
                 }
             }
         }
@@ -68,10 +61,10 @@ public class DamageEvents {
             ItemStack itemStack = player.getInventory().items.get(i);
             if (!itemStack.isEmpty() && itemStack.getItem() instanceof ArmorItem armorItem) {
                 if (armorItem.getSlot() == ((ArmorItem) armor.getItem()).getSlot() && itemStack != armor) {
-                    return itemStack;
+                    return i;
                 }
             }
         }
-        return ItemStack.EMPTY;
+        return -1;
     }
 }
