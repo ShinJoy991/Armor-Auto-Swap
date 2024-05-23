@@ -16,7 +16,7 @@ public class Config
 
     public static final ForgeConfigSpec.IntValue PERCENT_NUMBER = BUILDER
             .comment("A percent number in %, 0 to disable")
-            .defineInRange("percentNumber", 98, 0, 99);
+            .defineInRange("percentNumber", 10, 0, 99);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
