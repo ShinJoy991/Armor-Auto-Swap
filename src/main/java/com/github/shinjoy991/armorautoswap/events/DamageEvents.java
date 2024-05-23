@@ -31,17 +31,14 @@ public class DamageEvents {
                             return;
                         }
                         if (armorSwapEnabled.getOrDefault(player.getUUID(), Config.defaultMode)) {
-                            if (currentDurability - e.getAmount() / 4.0 < threshold/100.0) {
+                            if (currentDurability - e.getAmount() / 4.0 < threshold / 100.0) {
 
-                                ItemStack replacement = findReplacement(player, armor);
-                                if (!replacement.isEmpty()) {
-                                    
-                                    if (!player.getInventory().add(armor.copy())) {
-                                        
-                                        player.drop(armor.copy(), false);
-                                    }
+                                int replacementSlot = findReplacement(player, armor);
+                                if (replacementSlot != -1) {
+                                    ItemStack replacement =
+                                            player.getInventory().items.get(replacementSlot);
                                     player.setItemSlot(slot, replacement.copy());
-                                    replacement.shrink(1);
+                                    player.getInventory().items.set(replacementSlot, armor.copy());
                                 }
                             }
                         }
@@ -52,12 +49,12 @@ public class DamageEvents {
         }
     }
 
-    private static ItemStack findReplacement(Player player, ItemStack armor) {
+    private static int findReplacement(Player player, ItemStack armor) {
         for (int i = 9; i < 36; i++) {
             ItemStack itemStack = player.getInventory().items.get(i);
             if (!itemStack.isEmpty() && itemStack.getItem() instanceof ArmorItem armorItem) {
                 if (armorItem.getEquipmentSlot() == ((ArmorItem) armor.getItem()).getEquipmentSlot() && itemStack != armor) {
-                    return itemStack;
+                    return i;
                 }
             }
         }
@@ -65,10 +62,10 @@ public class DamageEvents {
             ItemStack itemStack = player.getInventory().items.get(i);
             if (!itemStack.isEmpty() && itemStack.getItem() instanceof ArmorItem armorItem) {
                 if (armorItem.getEquipmentSlot() == ((ArmorItem) armor.getItem()).getEquipmentSlot() && itemStack != armor) {
-                    return itemStack;
+                    return i;
                 }
             }
         }
-        return ItemStack.EMPTY;
+        return -1;
     }
 }
