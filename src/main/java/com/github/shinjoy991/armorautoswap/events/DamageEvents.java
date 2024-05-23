@@ -11,8 +11,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.UUID;
-
 import static com.github.shinjoy991.armorautoswap.client.InputEvents.armorSwapEnabled;
 
 @Mod.EventBusSubscriber(modid = ArmorAutoSwap.MOD_ID)
