@@ -1,9 +1,12 @@
 package com.github.shinjoy991.armorautoswap;
 
+import com.github.shinjoy991.armorautoswap.client.ClientKeyMapping;
+import com.github.shinjoy991.armorautoswap.client.NetworkHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -18,6 +21,7 @@ public class ArmorAutoSwap {
     private static final Logger LOGGER = LogManager.getLogger();
     public ArmorAutoSwap() {
         MinecraftForge.EVENT_BUS.register(this);
+        NetworkHandler.register();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
@@ -32,6 +36,7 @@ public class ArmorAutoSwap {
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+            ClientRegistry.registerKeyBinding(ClientKeyMapping.DRINKING_KEY);
             LOGGER.info("ARMOR AUTO SWAP HELLO FROM CLIENT SETUP");
         }
     }
