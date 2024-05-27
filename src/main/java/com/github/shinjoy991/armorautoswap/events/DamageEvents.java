@@ -11,15 +11,19 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import static com.github.shinjoy991.armorautoswap.client.InputEvents.armorSwapEnabled;
+import java.util.HashMap;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = ArmorAutoSwap.MOD_ID)
 public class DamageEvents {
+    public static final HashMap<UUID, Boolean> armorSwapEnabled = new HashMap<>();
 
     @SubscribeEvent
     public static void onPlayerDestroyArmor(LivingHurtEvent e) {
 
         if (e.getEntity() instanceof ServerPlayer player) {
+            UUID playerUUID = player.getUUID();
+            boolean isEnabled = armorSwapEnabled.getOrDefault(playerUUID, Config.defaultMode);
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (slot.getType() == EquipmentSlot.Type.ARMOR) {
                     ItemStack armor = player.getItemBySlot(slot);
@@ -30,13 +34,12 @@ public class DamageEvents {
                         if (threshold == 0) {
                             return;
                         }
-                        if (armorSwapEnabled.getOrDefault(player.getUUID(), Config.defaultMode)) {
-                            if (currentDurability - e.getAmount() / 4.0 < threshold / 100.0) {
+                        if (isEnabled) {
+                            if (currentDurability - e.getAmount() / 4.0 < threshold/100.0) {
 
                                 int replacementSlot = findReplacement(player, armor);
                                 if (replacementSlot != -1) {
-                                    ItemStack replacement =
-                                            player.getInventory().items.get(replacementSlot);
+                                    ItemStack replacement = player.getInventory().items.get(replacementSlot);
                                     player.setItemSlot(slot, replacement.copy());
                                     player.getInventory().items.set(replacementSlot, armor.copy());
                                 }
