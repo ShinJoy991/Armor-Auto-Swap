@@ -30,12 +30,15 @@ public class ArmorSwapPacket {
             if (player instanceof ServerPlayer) {
                 DamageEvents.setEnable(player.getUUID(), message.isEnabled);
                 if (message.isEnabled) {
-                    ItemStack item = player.getMainHandItem();
-                    if (item.getItem() instanceof CapsuleWardrobeItem capsule) {
-                        capsule.swappedFeet = false;
-                        capsule.swappedLegs = false;
-                        capsule.swappedChest = false;
-                        capsule.swappedHead = false;
+                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                        ItemStack item = player.getInventory().getItem(i);
+
+                        if (item.getItem() instanceof CapsuleWardrobeItem capsule) {
+                            capsule.swappedFeet = false;
+                            capsule.swappedLegs = false;
+                            capsule.swappedChest = false;
+                            capsule.swappedHead = false;
+                        }
                     }
                 }
             }
