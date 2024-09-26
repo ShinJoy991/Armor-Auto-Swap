@@ -7,6 +7,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 
+import static com.github.shinjoy991.armorautoswap.helpers.SwappedTagUtil.putSwappedTag;
+
 public class ArmorSwapPacket {
 
     private final boolean isEnabled;
@@ -33,11 +35,11 @@ public class ArmorSwapPacket {
                     for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                         ItemStack item = player.getInventory().getItem(i);
 
-                        if (item.getItem() instanceof CapsuleWardrobeItem capsule) {
-                            capsule.swappedFeet = false;
-                            capsule.swappedLegs = false;
-                            capsule.swappedChest = false;
-                            capsule.swappedHead = false;
+                        if (item.getItem() instanceof CapsuleWardrobeItem) {
+                            putSwappedTag("swappedfeet", item, false);
+                            putSwappedTag("swappedlegs", item, false);
+                            putSwappedTag("swappedchest", item, false);
+                            putSwappedTag("swappedhead", item, false);
                         }
                     }
                 }

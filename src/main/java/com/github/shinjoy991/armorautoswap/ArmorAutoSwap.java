@@ -2,6 +2,7 @@ package com.github.shinjoy991.armorautoswap;
 
 import com.github.shinjoy991.armorautoswap.client.NetworkHandler;
 import com.github.shinjoy991.armorautoswap.register.CapsuleWardrobeItem;
+import com.github.shinjoy991.armorautoswap.register.DataRegister;
 import com.github.shinjoy991.armorautoswap.register.InitClientEvents;
 import com.github.shinjoy991.armorautoswap.register.ModMenuRegistry;
 import net.minecraft.core.registries.Registries;
@@ -42,6 +43,7 @@ public class ArmorAutoSwap {
         ITEMS.register(modEventBus);
         ModMenuRegistry.MENU_TYPES.register(modEventBus);
         InitClientEvents.init();
+        DataRegister.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);

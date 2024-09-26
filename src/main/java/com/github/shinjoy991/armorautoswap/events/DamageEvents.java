@@ -3,7 +3,9 @@ package com.github.shinjoy991.armorautoswap.events;
 import com.github.shinjoy991.armorautoswap.ArmorAutoSwap;
 import com.github.shinjoy991.armorautoswap.Config;
 import com.github.shinjoy991.armorautoswap.register.CapsuleWardrobeItem;
+import com.github.shinjoy991.armorautoswap.register.CapsuleWardrobeMenu;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +22,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.github.shinjoy991.armorautoswap.helpers.SwappedTagUtil.getSwappedTag;
+import static com.github.shinjoy991.armorautoswap.helpers.SwappedTagUtil.putSwappedTag;
 import static net.minecraft.core.component.DataComponents.CONTAINER;
 
 @Mod.EventBusSubscriber(modid = ArmorAutoSwap.MOD_ID)
@@ -32,6 +36,9 @@ public class DamageEvents {
         if (e.getEntity() instanceof ServerPlayer player) {
             boolean checkCapsule = false;
             if (Config.percentNumber == 0) {
+                return;
+            }
+            if (player.containerMenu instanceof CapsuleWardrobeMenu) {
                 return;
             }
             DataComponentMap capsuleDataMap = null;
@@ -75,12 +82,13 @@ public class DamageEvents {
                             int replacementSlot = Math.abs(slot.getFilterFlag() - 4);
                             try {
                                 ItemStack replacementItem = capsuleContainer.get(replacementSlot);
-                                if (!replacementItem.isEmpty() && capsuleStack.getItem() instanceof CapsuleWardrobeItem capsule) {
+                                if (!replacementItem.isEmpty() && capsuleStack.getItem() instanceof CapsuleWardrobeItem) {
+
                                     boolean swapped = switch (replacementSlot) {
-                                        case 3 -> capsule.swappedFeet;
-                                        case 2 -> capsule.swappedLegs;
-                                        case 1 -> capsule.swappedChest;
-                                        case 0 -> capsule.swappedHead;
+                                        case 3 -> getSwappedTag(capsuleStack, "swappedfeet");
+                                        case 2 -> getSwappedTag(capsuleStack, "swappedlegs");
+                                        case 1 -> getSwappedTag(capsuleStack, "swappedchest");
+                                        case 0 -> getSwappedTag(capsuleStack, "swappedhead");
                                         default -> false;
                                     };
                                     if (swapped)
@@ -92,10 +100,10 @@ public class DamageEvents {
                                         continue;
                                     }
                                     switch (replacementSlot) {
-                                        case 3 -> capsule.swappedFeet = true;
-                                        case 2 -> capsule.swappedLegs = true;
-                                        case 1 -> capsule.swappedChest = true;
-                                        case 0 -> capsule.swappedHead = true;
+                                        case 3 -> putSwappedTag("swappedfeet", capsuleStack, true);
+                                        case 2 -> putSwappedTag("swappedlegs", capsuleStack, true);
+                                        case 1 -> putSwappedTag("swappedchest", capsuleStack, true);
+                                        case 0 -> putSwappedTag("swappedhead", capsuleStack, true);
                                     }
                                 }
                             } catch (IndexOutOfBoundsException exception) {
@@ -108,10 +116,7 @@ public class DamageEvents {
 
             }
             if (checkCapsule) {
-                DataComponentMap componentMap = DataComponentMap.builder()
-                        .set(CONTAINER, ItemContainerContents.fromItems(capsuleContainer))
-                        .build();
-                capsuleStack.applyComponents(componentMap);
+                capsuleStack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(capsuleContainer));
             }
 
         }

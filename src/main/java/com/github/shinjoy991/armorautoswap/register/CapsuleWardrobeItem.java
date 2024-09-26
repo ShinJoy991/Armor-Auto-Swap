@@ -20,10 +20,6 @@ import static net.minecraft.core.component.DataComponents.CONTAINER;
 
 public class CapsuleWardrobeItem extends Item {
 
-    public boolean swappedFeet = false;
-    public boolean swappedLegs = false;
-    public boolean swappedChest = false;
-    public boolean swappedHead = false;
     public CapsuleWardrobeItem(Properties properties) {
         super(properties);
     }
@@ -31,30 +27,33 @@ public class CapsuleWardrobeItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(new MenuProvider() {
-                @Override
-                public Component getDisplayName() {
-                    return Component.literal("Capsule Wardrobe");
-                }
+            if (hand == InteractionHand.MAIN_HAND) {
+                serverPlayer.openMenu(new MenuProvider() {
 
-                @Override
-                public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-                    SimpleContainer container = new SimpleContainer(4);
-
-                    ItemStack heldItem = player.getItemInHand(hand);
-                    DataComponentMap dataMap = heldItem.getComponents();
-
-                    if (dataMap.get(CONTAINER) != null) {
-                        List<ItemStack> stackContainer = dataMap.get(CONTAINER).stream().toList();
-
-                        for (int i = 0; i < stackContainer.size(); i++) {
-                            container.setItem(i, stackContainer.get(i));
-                        }
+                    @Override
+                    public Component getDisplayName() {
+                        return Component.literal("Capsule Wardrobe");
                     }
 
-                    return new CapsuleWardrobeMenu(id, inv, container);
-                }
-            }, player.blockPosition());
+                    @Override
+                    public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
+                        SimpleContainer container = new SimpleContainer(4);
+
+                        ItemStack heldItem = player.getItemInHand(hand);
+                        DataComponentMap dataMap = heldItem.getComponents();
+
+                        if (dataMap.get(CONTAINER) != null) {
+                            List<ItemStack> stackContainer = dataMap.get(CONTAINER).stream().toList();
+
+                            for (int i = 0; i < stackContainer.size(); i++) {
+                                container.setItem(i, stackContainer.get(i));
+                            }
+                        }
+
+                        return new CapsuleWardrobeMenu(id, inv, container);
+                    }
+                }, player.blockPosition());
+            }
         }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
