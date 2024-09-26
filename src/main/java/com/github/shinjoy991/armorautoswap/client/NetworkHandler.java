@@ -8,17 +8,15 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public class NetworkHandler {
     public static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(ArmorAutoSwap.MOD_ID, "network"),
+            new ResourceLocation(ArmorAutoSwap.MOD_ID, "main"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
     );
 
     public static void register() {
-        int id = 0;
-        CHANNEL.registerMessage(id++, ArmorSwapPacket.class, ArmorSwapPacket::encode,
+        ArmorAutoSwap.NETWORK = CHANNEL;
+        CHANNEL.registerMessage(0, ArmorSwapPacket.class, ArmorSwapPacket::encode,
                 ArmorSwapPacket::decode, ArmorSwapPacket::handle);
-        CHANNEL.registerMessage(id++, ArmorSwapSyncPacket.class, ArmorSwapSyncPacket::encode,
-                ArmorSwapSyncPacket::decode, ArmorSwapSyncPacket::handle);
     }
 }

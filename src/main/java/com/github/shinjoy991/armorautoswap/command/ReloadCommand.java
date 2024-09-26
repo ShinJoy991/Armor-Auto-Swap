@@ -1,6 +1,7 @@
 package com.github.shinjoy991.armorautoswap.command;
 
 import com.github.shinjoy991.armorautoswap.Config;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -13,7 +14,8 @@ import net.minecraft.world.entity.Entity;
 
 public class ReloadCommand {
     public ReloadCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("ArmorAutoSwapReload").executes((command) -> CustomCommand1a(command.getSource())));
+        dispatcher.register(Commands.literal("ArmorAutoSwapReload").requires(command -> command
+                .hasPermission(4)).executes((command) -> CustomCommand1a(command.getSource())));
     }
 
     private int CustomCommand1a(CommandSourceStack source) {
@@ -22,16 +24,13 @@ public class ReloadCommand {
         if (!(player instanceof ServerPlayer)) {
             return 0;
         }
-        if (player.hasPermissions(4)) {
-            if (!player.getCommandSenderWorld().isClientSide && player.getServer() != null) {
-                Config.reloadCommand();
-
-                MutableComponent message = Component.literal("[ArmorAutoSwap] ")
-                        .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
-                        .append(Component.literal("Reloaded").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
-                player.sendSystemMessage(message);
-            }
+        if (!player.getCommandSenderWorld().isClientSide && player.getServer() != null) {
+            Config.reloadCommand();
+            MutableComponent message = Component.literal("[ArmorAutoSwap] ")
+                    .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
+                    .append(Component.literal("Reloaded").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
+            player.sendSystemMessage(message);
         }
-        return 0;
+        return Command.SINGLE_SUCCESS;
     }
 }
