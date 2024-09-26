@@ -6,8 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @Mod.EventBusSubscriber(modid = ArmorAutoSwap.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class Config
-{
+public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
     public static final ForgeConfigSpec.BooleanValue DEFAULT_MODE = BUILDER
@@ -24,8 +23,7 @@ public class Config
     public static int percentNumber;
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event)
-    {
+    static void onLoad(final ModConfigEvent event) {
         defaultMode = DEFAULT_MODE.get();
         percentNumber = PERCENT_NUMBER.get();
     }
@@ -34,4 +32,5 @@ public class Config
         defaultMode = DEFAULT_MODE.get();
         percentNumber = PERCENT_NUMBER.get();
     }
+
 }

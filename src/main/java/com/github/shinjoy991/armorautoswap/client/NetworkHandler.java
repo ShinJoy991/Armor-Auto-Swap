@@ -2,30 +2,25 @@ package com.github.shinjoy991.armorautoswap.client;
 
 import com.github.shinjoy991.armorautoswap.ArmorAutoSwap;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.Channel;
 import net.minecraftforge.network.ChannelBuilder;
-import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.SimpleChannel;
 
 public class NetworkHandler {
+    public static final ResourceLocation CHANNEL_NAME = new ResourceLocation(ArmorAutoSwap.MOD_ID, "network");
 
-    public static final SimpleChannel CHANNEL = ChannelBuilder.named(
-                    new ResourceLocation(ArmorAutoSwap.MOD_ID, "main"))
-            .serverAcceptedVersions((status, version) -> true)
-            .clientAcceptedVersions((status, version) -> true)
-            .networkProtocolVersion(1)
-            .simpleChannel();
+    public static SimpleChannel registerNetworkChannel() {
+        final SimpleChannel channel = ChannelBuilder.named(CHANNEL_NAME)
+                .acceptedVersions(Channel.VersionTest.exact(1))
+                .networkProtocolVersion(1)
+                .simpleChannel();
+        ArmorAutoSwap.NETWORK = channel;
 
-    public static void register() {
-        int id = 0;
-        CHANNEL.messageBuilder(ArmorSwapPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+        channel.messageBuilder(ArmorSwapPacket.class, 0)
                 .encoder(ArmorSwapPacket::encode)
                 .decoder(ArmorSwapPacket::decode)
-                .consumerNetworkThread(ArmorSwapPacket::handle)
+                .consumerMainThread(ArmorSwapPacket::handle)
                 .add();
-        CHANNEL.messageBuilder(ArmorSwapSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(ArmorSwapSyncPacket::encode)
-                .decoder(ArmorSwapSyncPacket::decode)
-                .consumerNetworkThread(ArmorSwapSyncPacket::handle)
-                .add();
+        return channel;
     }
 }
