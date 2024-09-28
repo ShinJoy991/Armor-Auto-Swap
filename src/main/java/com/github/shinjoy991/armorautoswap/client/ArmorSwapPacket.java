@@ -1,32 +1,30 @@
 package com.github.shinjoy991.armorautoswap.client;
 
 import com.github.shinjoy991.armorautoswap.events.DamageEvents;
+import com.github.shinjoy991.armorautoswap.register.CapsuleWardrobeItem;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ArmorSwapPacket {
-    private final UUID playerUUID;
+
     private final boolean isEnabled;
 
-    public ArmorSwapPacket(UUID playerUUID, boolean isEnabled) {
-        this.playerUUID = playerUUID;
+    public ArmorSwapPacket(boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
 
     public static void encode(ArmorSwapPacket packet, PacketBuffer buffer) {
-        buffer.writeUUID(packet.playerUUID);
         buffer.writeBoolean(packet.isEnabled);
     }
 
     public static ArmorSwapPacket decode(PacketBuffer buffer) {
-        UUID playerUUID = buffer.readUUID();
         boolean isEnabled = buffer.readBoolean();
-        return new ArmorSwapPacket(playerUUID, isEnabled);
+        return new ArmorSwapPacket(isEnabled);
     }
 
     public static void handle(ArmorSwapPacket packet,
@@ -34,10 +32,20 @@ public class ArmorSwapPacket {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayerEntity player = context.getSender();
-            if (player != null && player.getUUID().equals(packet.playerUUID)) {
-                DamageEvents.armorSwapEnabled.put(packet.playerUUID, packet.isEnabled);
-                NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                        new ArmorSwapSyncPacket(packet.playerUUID, packet.isEnabled));
+            if (player instanceof ServerPlayerEntity) {
+                DamageEvents.setEnable(player.getUUID(), packet.isEnabled);
+                if (packet.isEnabled) {
+                    for (int i = 0; i < player.inventory.getContainerSize(); i++) {
+                        ItemStack item = player.inventory.getItem(i);
+                        if (item.getItem() instanceof CapsuleWardrobeItem) {
+                            CapsuleWardrobeItem capsule = (CapsuleWardrobeItem) item.getItem();
+                            capsule.setSwappedState(item, EquipmentSlotType.FEET, false);
+                            capsule.setSwappedState(item, EquipmentSlotType.LEGS, false);
+                            capsule.setSwappedState(item, EquipmentSlotType.CHEST, false);
+                            capsule.setSwappedState(item, EquipmentSlotType.HEAD, false);
+                        }
+                    }
+                }
             }
         });
         context.setPacketHandled(true);

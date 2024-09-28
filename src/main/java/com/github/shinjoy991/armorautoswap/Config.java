@@ -4,10 +4,8 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-
 @Mod.EventBusSubscriber(modid = ArmorAutoSwap.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class Config
-{
+public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
     public static final ForgeConfigSpec.BooleanValue DEFAULT_MODE = BUILDER
@@ -24,10 +22,10 @@ public class Config
     public static int percentNumber;
 
     @SubscribeEvent
-    public static void onLoad(final ModConfig.ModConfigEvent event) {
+    public static void onLoad(final ModConfig.Loading event) {
         if (event.getConfig().getSpec() == SPEC) {
-            defaultMode = DEFAULT_MODE.get();
-            percentNumber = PERCENT_NUMBER.get();
+            ArmorAutoSwap.LOGGER.info("Config is being loaded");
+            reloadCommand();
         }
     }
 

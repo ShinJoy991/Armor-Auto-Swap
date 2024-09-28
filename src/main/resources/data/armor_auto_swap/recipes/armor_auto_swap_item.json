@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "armor_auto_swap_group",
+  "pattern": [
+    "cac",
+    "aba",
+    "cac"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:gold_ingot"
+    },
+    "b": {
+      "item": "minecraft:quartz"
+    },
+    "c": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "armor_auto_swap:armor_auto_swap_item",
+    "count": 1
+  },
+  "show_notification": false
+}
