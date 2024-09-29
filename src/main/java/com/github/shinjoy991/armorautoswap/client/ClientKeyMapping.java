@@ -9,9 +9,9 @@ import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT})
 public class ClientKeyMapping {
-    public static final String KEY_CATEGORY_RELOAD = "key.category.armorautoswap";
-    public static final String KEY_DESCRIPTION = "key.category.armorautoswap.reload";
-    public static final KeyMapping DRINKING_KEY = new KeyMapping(KEY_DESCRIPTION,
+    public static final String KEY_CATEGORY_RELOAD = "key.category.armor_auto_swap";
+    public static final String KEY_DESCRIPTION = "key.category.armor_auto_swap.reload";
+    public static final KeyMapping SWAP_KEY = new KeyMapping(KEY_DESCRIPTION,
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_0,
             KEY_CATEGORY_RELOAD);
 }

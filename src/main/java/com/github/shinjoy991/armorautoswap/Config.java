@@ -24,7 +24,7 @@ public class Config
     public static int percentNumber;
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event)
+    static void onLoad(final ModConfigEvent.Loading event)
     {
         defaultMode = DEFAULT_MODE.get();
         percentNumber = PERCENT_NUMBER.get();
